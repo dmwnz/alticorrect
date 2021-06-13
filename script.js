@@ -177,6 +177,11 @@ function buildChart(altitudesInit, altitudesNew) {
         }
     };
     
+    var existingChart = Chart.getChart("myChart");
+    if (existingChart != undefined) {
+        existingChart.destroy();
+    }
+    
     var chart = new Chart(document.getElementById('myChart'), config);
 }
 
