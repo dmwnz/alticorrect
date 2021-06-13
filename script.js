@@ -192,7 +192,7 @@ function degreesToRadians(degrees) {
 function calcDistance(pointA, pointB) {
     var earthRadiusKm = 6371;
     
-    let [lon1, lat1, lon2, lat2] = [pointA[0], pointA[1], pointB[0], pointB[1]]
+    let [lon1, lat1, ele1, lon2, lat2, ele2] = [pointA[0], pointA[1], pointA[2], pointB[0], pointB[1], pointB[2]]
     
     var dLat = degreesToRadians(lat2-lat1);
     var dLon = degreesToRadians(lon2-lon1);
@@ -202,8 +202,11 @@ function calcDistance(pointA, pointB) {
 
     var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
           Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-    return earthRadiusKm * c;
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var d = earthRadiusKm * c;
+    var e = (ele2 - ele1) / 1000;
+    
+    return Math.sqrt(d*d + e*e);
 
 }
 
