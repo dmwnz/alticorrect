@@ -135,22 +135,26 @@ function buildChart(altitudesInit, altitudesNew) {
         borderColor: 'rgb(75, 192, 192)',
         borderWidth: 2,
         lineTension: 0,
+        showLine: true,
         data: dataNew
       },{
         label: 'Initial',
         borderColor: 'rgb(255, 99, 132)',
         borderWidth: 2,
         lineTension: 0,
+        showLine: true,
         data: dataInit
         
       }]
     };
     const config = {
-        type: 'line',
+        type: 'scatter',
         data,
         options: {
             interaction: {
-                mode: 'x'
+                mode: 'nearest',
+                intersect: false,
+                axis: 'x'
             },
             radius: 0,
             scales: {
@@ -159,15 +163,15 @@ function buildChart(altitudesInit, altitudesNew) {
                 title: {
                   display: true,
                     text: 'Distance (km)'
-                }
+                },
+                max: totalDistance
               },
               y: {
                 display: true,
                 title: {
                   display: true,
                   text: 'Altitude (m)'
-                },
-                suggestedMin: 0,
+                }
               }
             }
         }
