@@ -57,7 +57,7 @@ function getAllPoints(xml) {
 }
 
 function getPointsAltitude(points) {
-    var chunk_length = 200
+    var chunk_length = 300
     var res = []
     for(var chunk_start = 0; chunk_start < points.length; chunk_start = chunk_start + chunk_length) {
         var sub_points = points.slice(chunk_start, chunk_start + chunk_length)
