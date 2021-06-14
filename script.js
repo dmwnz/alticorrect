@@ -103,10 +103,9 @@ function download(filename, text) {
 
 
 function buildChart(altitudesInit, altitudesNew) {
-
-    var dataInit = [altitudesInit[0][2]] //.map(a => a[2]);
-    var dataNew = [altitudesNew[0][2]] //.map(a => a[2]);
-    var labels = [0.0]
+    var dataInit = [altitudesInit[0][2]]
+    var dataNew = [altitudesNew[0][2]]
+    var distances = [0.0]
     var totalDistance = 0.0
     let [subDistance, subInit, subNew, subCount] = [0, 0, 0, 0]
 
@@ -118,18 +117,37 @@ function buildChart(altitudesInit, altitudesNew) {
         subCount++
         if(subDistance >= 0.025) {
             totalDistance += subDistance
-            labels.push(totalDistance)            
+            distances.push(totalDistance)
             dataInit.push(subInit / subCount)
             dataNew.push(subNew / subCount)
             subDistance=0
             subInit=0
             subNew=0
             subCount=0
-        }        
+        }
+    }
+    
+    let [elevGainLossInit, elevGainLossNew] = [0, 0]
+    let [totalGainLossInit, totalGainLossNew] = [[0.0, 0.0], [0.0, 0.0]]
+    
+    for(var i = 1; i < altitudesInit.length; i++) {
+        elevGainLossInit += altitudesInit[i][2] - altitudesInit[i-1][2]
+        elevGainLossNew += altitudesNew[i][2] - altitudesNew[i-1][2]
+        
+        if(Math.abs(elevGainLossInit) >= 5) {
+            totalGainLossInit[0] += Math.max(0, elevGainLossInit)
+            totalGainLossInit[1] += Math.min(0, elevGainLossInit)
+            elevGainLossInit = 0
+        }
+        if(Math.abs(elevGainLossNew) >= 5) {
+            totalGainLossNew[0] += Math.max(0, elevGainLossNew)
+            totalGainLossNew[1] += Math.min(0, elevGainLossNew)
+            elevGainLossNew = 0
+        }
     }
 
     const data = {
-      labels: labels,
+      labels: distances,
       datasets: [{
         label: 'New',
         borderColor: 'rgb(75, 192, 192)',
@@ -144,7 +162,6 @@ function buildChart(altitudesInit, altitudesNew) {
         lineTension: 0,
         showLine: true,
         data: dataInit
-        
       }]
     };
     const config = {
@@ -155,6 +172,11 @@ function buildChart(altitudesInit, altitudesNew) {
                 mode: 'nearest',
                 intersect: false,
                 axis: 'x'
+            },
+            plugins: {
+                legend: {
+                    reverse: true
+                }
             },
             radius: 0,
             scales: {
@@ -183,6 +205,13 @@ function buildChart(altitudesInit, altitudesNew) {
     }
     
     var chart = new Chart(document.getElementById('myChart'), config);
+    
+    document.getElementById('altitude_up_init').innerHTML = `⬆️ ${totalGainLossInit[0].toFixed(1)}m`
+    document.getElementById('altitude_down_init').innerHTML = `⬇️  ${totalGainLossInit[1].toFixed(1)}m`
+    document.getElementById('altitude_up_new').innerHTML = `⬆️ ${totalGainLossNew[0].toFixed(1)}m`
+    document.getElementById('altitude_down_new').innerHTML = `⬇️  ${totalGainLossNew[1].toFixed(1)}m`
+    
+    document.getElementById('total_gain').removeAttribute('style')
 }
 
 function degreesToRadians(degrees) {
